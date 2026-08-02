@@ -6,6 +6,7 @@
 - Kept the original MIT-licensed empty and full cup artwork with one-click toggling.
 - Added Agent Watch for common coding-agent processes.
 - Added optional turn-aware lifecycle hooks for Claude Code and Codex, with safe merging that preserves existing hooks.
+- Matched Codex's three-second `SessionEnd` timeout cap to avoid configuration warnings.
 - Made process-based Agent Watch a separate, default-off fallback for keeping awake while an agent process remains open.
 - Fixed Claude desktop processes being mistaken for active Claude Code sessions when macOS truncates the command path.
 - Added manual timers, battery protection, display-sleep control, network assertions, and best-effort closed-lid mode.

@@ -26,7 +26,11 @@ public enum AgentHookConfiguration {
 
         self.append(command(.wait, provider), to: "PermissionRequest", in: &hooks, matcher: "*")
         self.append(command(.stop, provider), to: "Stop", in: &hooks)
-        self.append(command(.stop, provider), to: "SessionEnd", in: &hooks)
+        self.append(
+            command(.stop, provider),
+            to: "SessionEnd",
+            in: &hooks,
+            timeout: target == .codex ? 3 : 5)
 
         if target == .claude {
             self.append(command(.refresh, provider), to: "PostToolUseFailure", in: &hooks, matcher: "*")
@@ -112,13 +116,14 @@ public enum AgentHookConfiguration {
         _ command: String,
         to event: String,
         in hooks: inout [String: Any],
-        matcher: String? = nil)
+        matcher: String? = nil,
+        timeout: Int = 5)
     {
         var groups = hooks[event] as? [[String: Any]] ?? []
         var group: [String: Any] = [
             "hooks": [[
                 "command": command,
-                "timeout": 5,
+                "timeout": timeout,
                 "type": "command",
             ]],
         ]

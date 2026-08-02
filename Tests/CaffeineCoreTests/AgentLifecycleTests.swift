@@ -37,6 +37,19 @@ struct AgentLifecycleTests {
         #expect(!AgentHookConfiguration.containsInstalledHooks(in: removed, target: .codex))
     }
 
+    @Test func `Codex SessionEnd respects its three second timeout cap`() throws {
+        let codex = try AgentHookConfiguration.installing(in: nil, target: .codex) { action, provider in
+            "\(AgentHookConfiguration.commandMarker) caffeine \(action.rawValue) \(provider.rawValue)"
+        }
+        let claude = try AgentHookConfiguration.installing(in: nil, target: .claude) { action, provider in
+            "\(AgentHookConfiguration.commandMarker) caffeine \(action.rawValue) \(provider.rawValue)"
+        }
+
+        #expect(try self.timeout(for: "SessionEnd", in: codex) == 3)
+        #expect(try self.timeout(for: "Stop", in: codex) == 5)
+        #expect(try self.timeout(for: "SessionEnd", in: claude) == 5)
+    }
+
     @Test func `Claude hooks include input waiting events`() throws {
         let installed = try AgentHookConfiguration.installing(in: nil, target: .claude) { action, provider in
             "\(AgentHookConfiguration.commandMarker) caffeine \(action.rawValue) \(provider.rawValue)"
@@ -97,5 +110,13 @@ struct AgentLifecycleTests {
     private func markerCount(in data: Data) -> Int {
         guard let text = String(data: data, encoding: .utf8) else { return 0 }
         return text.components(separatedBy: AgentHookConfiguration.commandMarker).count - 1
+    }
+
+    private func timeout(for event: String, in data: Data) throws -> Int {
+        let root = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        let hooks = try #require(root["hooks"] as? [String: Any])
+        let groups = try #require(hooks[event] as? [[String: Any]])
+        let handlers = try #require(groups.first?["hooks"] as? [[String: Any]])
+        return try #require(handlers.first?["timeout"] as? Int)
     }
 }
