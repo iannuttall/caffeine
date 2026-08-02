@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install formatting tools
+        run: brew install swiftformat swiftlint
+      - name: Check and test
+        run: make check
+
+  portable-core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: swift:6.2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the agent-facing CLI and core
+        run: |
+          swift build -c release --product caffeinecli --static-swift-stdlib
+          swift build -c release --target CaffeineCore --static-swift-stdlib

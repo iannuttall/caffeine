@@ -1,0 +1,15 @@
+{
+  "slug": "caffeine",
+  "displayName": "Caffeine",
+  "bundleId": "com.iannuttall.caffeine",
+  "teamId": "",
+  "minMacOS": "14.0",
+  "distribution": "direct",
+  "github": { "owner": "iannuttall", "repo": "caffeine" },
+  "feedURL": "https://raw.githubusercontent.com/iannuttall/caffeine/main/appcast.xml",
+  "downloadURLPrefix": "https://github.com/iannuttall/caffeine/releases/download/",
+  "homebrewTap": "iannuttall/homebrew-tap",
+  "sparklePublicKey": "",
+  "modules": ["statusbar", "settings", "updater", "cli"],
+  "permissions": {}
+}

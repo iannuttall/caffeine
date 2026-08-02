@@ -1,0 +1,11 @@
+.build/
+DerivedData/
+.swiftpm/xcode/
+*.app/
+*.zip
+*.dSYM*
+*.dmg
+*.pkg
+.DS_Store
+*.p8
+Scripts/local.env

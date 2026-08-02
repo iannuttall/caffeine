@@ -1,0 +1,44 @@
+strict: true
+included:
+  - Sources
+  - Tests
+excluded:
+  - .build
+  - .swiftpm
+  - DerivedData
+opt_in_rules:
+  - array_init
+  - closure_spacing
+  - collection_alignment
+  - contains_over_filter_count
+  - empty_collection_literal
+  - empty_count
+  - empty_string
+  - explicit_init
+  - first_where
+  - shorthand_optional_binding
+  - toggle_bool
+  - vertical_whitespace_closing_braces
+disabled_rules:
+  - identifier_name
+  - opening_brace
+  - trailing_whitespace
+  - trailing_comma
+  - todo
+force_cast: warning
+force_try: warning
+file_length:
+  warning: 700
+  error: 1000
+type_body_length:
+  warning: 400
+  error: 600
+function_body_length:
+  warning: 120
+  error: 250
+line_length:
+  warning: 120
+  error: 200
+  ignores_comments: true
+  ignores_urls: true
+reporter: "xcode"
