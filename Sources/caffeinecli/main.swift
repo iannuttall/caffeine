@@ -43,10 +43,12 @@ enum CaffeineCLI {
         defaults.set(duration, forKey: CaffeineDefaults.Key.commandDuration)
         defaults.set(UUID().uuidString, forKey: CaffeineDefaults.Key.commandRevision)
         defaults.synchronize()
+        #if os(macOS)
         DistributedNotificationCenter.default().postNotificationName(
             CaffeineDefaults.commandNotification,
             object: nil,
             deliverImmediately: true)
+        #endif
         print(command == .deactivate ? "Caffeine is resting." : "Caffeine command sent.")
     }
 

@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install formatting tools
         run: brew install swiftformat swiftlint
       - name: Check and test
@@ -69,7 +69,7 @@ jobs:
     container:
       image: swift:6.2
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build the agent-facing CLI and core
         run: |
           swift build -c release --product caffeinecli --static-swift-stdlib
