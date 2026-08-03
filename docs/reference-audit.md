@@ -10,7 +10,7 @@ The two cloned apps and the existing Scheduler and Portman apps pointed at a cle
 | Portman | Keyable fixed-size panel, status item rendering rules, live-process inspection, real launch verification | Preserved Caffeine's faster one-click behavior and used the panel as an optional control surface |
 | Agents Sleep Preventer | Claude Code and Codex lifecycle hooks that distinguish active work from waiting | Kept public IOKit assertions, added safe hook merging, and left process watching as an optional fallback |
 
-No source code was copied from the cloned projects. The original Caffeine menu-bar and app-icon artwork is reused under its MIT license, with the original copyright notice kept in the repository.
+No source code was copied from the cloned projects. The upstream Caffeine menu-bar and app-icon artwork is reused under its MIT license, with the original copyright notice kept in the repository.
 
 ## Ideas that fit a later release
 

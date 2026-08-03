@@ -159,5 +159,5 @@ output of `caffeine status --json` when it helps, but remove anything you do not
 
 ## License
 
-Caffeine is MIT licensed. The original Caffeine cup artwork keeps its original MIT attribution
+Caffeine is MIT licensed. The upstream Caffeine cup artwork keeps its MIT attribution
 in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

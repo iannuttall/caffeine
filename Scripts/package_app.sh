@@ -65,7 +65,7 @@ if [[ -d "$ROOT/Resources/AppIcon.icon" ]]; then
         [[ -f "$ICON_OUTPUT/AppIcon.icns" ]] && cp "$ICON_OUTPUT/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
         ICON_ENTRY='<key>CFBundleIconFile</key><string>AppIcon</string><key>CFBundleIconName</key><string>AppIcon</string>'
     else
-        echo "ERROR: Failed to compile the original Caffeine app icon." >&2
+        echo "ERROR: Failed to compile the upstream Caffeine app icon." >&2
         exit 1
     fi
 fi
