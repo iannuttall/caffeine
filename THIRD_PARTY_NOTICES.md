@@ -5,6 +5,11 @@
 The menu-bar images in `Sources/Caffeine/Resources` come from the MIT-licensed
 [Caffeine project](https://github.com/domzilla/Caffeine).
 
+Tomas Franzén of Lighthead Software created the original Caffeine in 2006. Michael Jones and
+IntelliScape Computer Solutions continued its development from 2018 after Tomas released the
+source under an open source license. The [official Caffeine FAQ](https://www.caffeine-app.net/en/)
+records that history.
+
 Copyright (c) 2006-2018 Tomas Franzén, Lighthead Software
 
 Copyright (c) 2018 Michael Jones, IntelliScape Computer Solutions

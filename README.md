@@ -15,8 +15,9 @@
 
 ## What Caffeine does
 
-Caffeine keeps the familiar cup in your menu bar. Click it once to keep your Mac awake. Click
-again and macOS can sleep normally. A full cup means a manual session is active.
+Caffeine keeps the cup and one-click toggle that made the original Mac app so good. Click it
+once to keep your Mac awake. Click again and macOS can sleep normally. A full cup means a manual
+session is active.
 
 Agent Watch adds a small blue dot when a coding agent owns the awake session. Optional hooks
 for Claude Code and Codex follow the actual turn. Caffeine turns on when work starts and releases
@@ -24,6 +25,16 @@ its power assertions when the agent finishes or waits for your input.
 
 The app also includes timers, battery protection, display sleep controls, a best-effort
 closed-lid mode, and a view of other processes currently blocking sleep.
+
+## Credit to the original Caffeine
+
+Tomas Franzén of Lighthead Software created Caffeine in 2006. Michael Jones and IntelliScape
+Computer Solutions carried it forward from 2018 after Tomas released the source under an open
+source license. The open source project was modernized again in 2022. The
+[official Caffeine FAQ](https://www.caffeine-app.net/en/) tells the full story.
+
+This project is an independent Swift rewrite. It keeps the original interaction and
+MIT-licensed menu-bar artwork, then adds Agent Watch for coding agents.
 
 ## Install Caffeine
 
