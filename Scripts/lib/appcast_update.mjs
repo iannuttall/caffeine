@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync } from "node:fs";
 
-const required = ["APPCAST", "CHANGELOG", "VERSION", "BUILD", "MIN_MACOS", "DOWNLOAD_URL", "ED_SIGNATURE", "ZIP_LENGTH", "PUB_DATE"];
+const required = ["APPCAST", "CHANGELOG", "VERSION", "BUILD", "MIN_MACOS", "DOWNLOAD_URL", "ED_SIGNATURE", "ARTIFACT_LENGTH", "PUB_DATE"];
 for (const name of required) {
   if (!process.env[name]) throw new Error(`Missing ${name}`);
 }
@@ -33,7 +33,7 @@ const item = `    <item>
       <sparkle:version>${escapeXML(process.env.BUILD)}</sparkle:version>
       <sparkle:shortVersionString>${escapeXML(process.env.VERSION)}</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>${escapeXML(process.env.MIN_MACOS)}</sparkle:minimumSystemVersion>
-      <enclosure url="${escapeXML(process.env.DOWNLOAD_URL)}" length="${escapeXML(process.env.ZIP_LENGTH)}" type="application/octet-stream" sparkle:edSignature="${escapeXML(process.env.ED_SIGNATURE)}" />
+      <enclosure url="${escapeXML(process.env.DOWNLOAD_URL)}" length="${escapeXML(process.env.ARTIFACT_LENGTH)}" type="application/octet-stream" sparkle:edSignature="${escapeXML(process.env.ED_SIGNATURE)}" />
     </item>`;
 
 let xml = readFileSync(process.env.APPCAST, "utf8");

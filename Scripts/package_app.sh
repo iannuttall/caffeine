@@ -117,4 +117,23 @@ if [[ "$CONF" == "debug" ]]; then
     codesign --force --sign - "$APP/Contents/MacOS/$CLI_NAME"
     codesign --force --sign - --deep "$APP"
 fi
+
+if [[ "$CONF" == "release" ]]; then
+    verify_universal() {
+        local target="$1" architectures
+        architectures=$(lipo -archs "$target")
+        [[ " $architectures " == *" arm64 "* && " $architectures " == *" x86_64 "* ]] || {
+            echo "ERROR: Expected a universal binary at $target, found: $architectures" >&2
+            exit 1
+        }
+    }
+
+    verify_universal "$APP/Contents/MacOS/$APP_NAME"
+    verify_universal "$APP/Contents/MacOS/$CLI_NAME"
+    if [[ -d "$APP/Contents/Frameworks/Sparkle.framework" ]]; then
+        while IFS= read -r -d '' target; do
+            if file "$target" | grep -q 'Mach-O'; then verify_universal "$target"; fi
+        done < <(find "$APP/Contents/Frameworks/Sparkle.framework" -type f -perm -111 -print0)
+    fi
+fi
 echo "$APP"

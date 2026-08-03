@@ -29,7 +29,7 @@ release:
 	./Scripts/sign-and-notarize.sh
 
 appcast:
-	./Scripts/make_appcast.sh $(ZIP)
+	./Scripts/make_appcast.sh $(ARTIFACT)
 
 power-check:
 	./Scripts/check_power_state.sh

@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -11,7 +12,7 @@ concurrency:
 
 jobs:
   lint-and-test:
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +20,48 @@ jobs:
         run: brew install swiftformat swiftlint
       - name: Check and test
         run: make check
+      - name: Validate release scripts
+        run: |
+          bash -n Scripts/*.sh
+          node --check Scripts/lib/app_config.mjs
+          node --check Scripts/lib/appcast_update.mjs
+      - name: Build universal release bundle
+        run: make package
+      - name: Verify universal executables
+        run: |
+          verify_archs() {
+            archs="$(lipo -archs "$1")"
+            [[ " $archs " == *" arm64 "* ]]
+            [[ " $archs " == *" x86_64 "* ]]
+          }
+          verify_archs .build/package/Caffeine.app/Contents/MacOS/Caffeine
+          verify_archs .build/package/Caffeine.app/Contents/MacOS/caffeinecli
+          find .build/package/Caffeine.app/Contents/Frameworks/Sparkle.framework \
+            -type f -perm -111 -print0 | while IFS= read -r -d '' item; do
+              if file "$item" | grep -q 'Mach-O'; then
+                verify_archs "$item"
+              fi
+            done
+      - name: Build and verify DMG
+        run: |
+          Scripts/build_dmg.sh \
+            "$PWD/.build/package/Caffeine.app" \
+            "$PWD/.build/artifacts/Caffeine-ci.dmg"
+          hdiutil verify .build/artifacts/Caffeine-ci.dmg
+      - name: Build ad-hoc signed launch bundle
+        run: ./Scripts/package_app.sh debug
+      - name: Verify app and Sparkle signatures
+        run: codesign --verify --deep --strict --verbose=1 .build/package/Caffeine.app
+      - name: Verify the bundle launches
+        run: |
+          .build/package/Caffeine.app/Contents/MacOS/Caffeine & PID=$!
+          sleep 6
+          if kill -0 "$PID" 2>/dev/null; then
+            kill "$PID"
+          else
+            echo "::error::Caffeine exited during launch"
+            exit 1
+          fi
 
   portable-core:
     runs-on: ubuntu-latest

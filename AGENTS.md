@@ -19,7 +19,7 @@ Read this file before changing anything. The traps below are product contracts o
 - `make check` formats, lints, and runs tests. Run it after every source change.
 - `swift test` runs the Swift Testing suite.
 - `make package` builds a universal release bundle.
-- `make release` signs, notarizes, staples, and creates the final zip. Do not run signing steps by hand.
+- `make release` signs, notarizes, staples, and creates the final DMG and checksum. Do not run signing steps by hand.
 
 ## Code style
 

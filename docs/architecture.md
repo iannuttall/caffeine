@@ -1,31 +1,70 @@
 # How Caffeine is put together
 
-The app has three targets.
+Caffeine has three SwiftPM targets.
 
-`CaffeineCore` decides when a session should be active, parses durations, and identifies agent processes from a `ps` snapshot. It stays portable so the important behavior can be tested without launching a macOS app.
+`CaffeineCore` owns portable policy, duration parsing, agent process parsing, lifecycle marker
+storage, and safe hook configuration editing. It does not import AppKit, SwiftUI, or IOKit, so
+the important behavior can be tested without launching the app.
 
-`caffeinecli` writes commands and reads status through the `com.iannuttall.caffeine.shared` defaults suite. The app checks command revisions once per second. This avoids Apple Events, accessibility permissions, sockets, and a background helper.
+`caffeinecli` sends manual commands through the shared user defaults suite. Its private
+`agent-event` command receives lifecycle hook payloads on standard input and updates the marker
+for that agent session. Hook errors are swallowed because a broken sleep helper must never stop
+Claude Code or Codex.
 
-`Caffeine` owns the menu bar UI and macOS services. `AwakeController` combines manual state, detected agents, battery state, and settings into one `AwakePolicyResult`. `PowerAssertionManager` translates that result into IOKit assertions.
-
-`PowerAssertionScanner` reads macOS's public per-process assertion catalog every eight seconds. It resolves assertions created on behalf of another process, groups them by owner, and excludes Caffeine itself. The Power pane shows the process, PID, reason, and assertion type without offering to terminate system services.
+`Caffeine` owns the menu bar UI and macOS services. `AwakeController` combines manual state,
+active lifecycle markers, optional process matches, battery state, and settings into one
+`AwakePolicyResult`. `PowerAssertionManager` turns that result into IOKit assertions.
 
 ```text
-menu bar / panel / CLI command
-             |
-       AwakeController
-        /     |      \
-manual state agents  battery
-        \     |      /
-          AwakePolicy
-               |
-   PowerAssertionManager
+menu bar / panel / CLI command / lifecycle hook
+                     |
+               AwakeController
+              /      |       \
+      manual state  agents  battery
+              \      |       /
+                 AwakePolicy
+                      |
+          PowerAssertionManager
 ```
 
-The UI reads a warm observable snapshot. Process scanning runs in an actor because `/bin/ps` can block. The app scans every eight seconds and updates timer and battery state every second.
+## Agent Watch activity
 
-## Power assertion plan
+Claude Code and Codex lifecycle hooks are the preferred activity source. A prompt or tool event
+creates or refreshes a per-session marker under Application Support. Stop, session end, and
+input-waiting events remove it. Markers have a stale cap so an interrupted hook cannot hold an
+assertion forever.
 
-Every active session gets `PreventUserIdleSystemSleep` and, by default, `PreventUserIdleDisplaySleep`. `NetworkClientActive` is enabled by default. Users can allow display sleep for unattended runs while keeping the Mac and network awake. Closed-lid mode adds `PreventSystemSleep` as a best-effort request.
+The installer edits `~/.claude/settings.json` and `~/.codex/hooks.json` as structured JSON. It
+removes older Caffeine handlers before adding the current set. Every other handler and setting
+is preserved. An unreadable file, unfamiliar hook structure, or concurrent edit aborts the
+operation without replacing the user's config.
 
-The manager applies complete plans. A setting change releases every old assertion before creating the new set. If any creation fails, it releases the partial set and reports the failure in the UI.
+Process watching is a separate fallback. When enabled, `ProcessScanner` runs `/bin/ps` in an
+actor and feeds its output to the portable parser. Main agent app processes can match, but app
+helpers and persistent desktop hosts do not. With the fallback disabled, an idle agent app does
+not keep Caffeine active.
+
+## Power assertions
+
+Every active session gets `PreventUserIdleSystemSleep` and, by default,
+`PreventUserIdleDisplaySleep`. `NetworkClientActive` is enabled by default. Users can allow the
+display to sleep while the Mac and network remain awake. Closed-lid mode adds
+`PreventSystemSleep` as a best-effort request.
+
+The manager replaces complete assertion plans. A setting change releases every old assertion
+before creating the new set. If any creation fails, it releases the partial set and reports the
+failure in the UI.
+
+`PowerAssertionScanner` reads macOS's public per-process assertion catalog every eight seconds.
+It resolves assertions created on behalf of another process, groups them by owner, and excludes
+Caffeine itself. The Power pane is read-only and never offers to terminate a system service.
+
+## UI and shared state
+
+The app updates timers, lifecycle markers, and battery state once per second. Process and power
+scans stay off the main actor. The panel owns a fixed size so changing timer text cannot move it
+away from the menu bar.
+
+The CLI and app share `com.iannuttall.caffeine.shared` user defaults. Commands carry a unique
+revision, which lets the app consume each request once without Apple Events, accessibility
+permissions, a socket, or a background helper.

@@ -5,5 +5,6 @@
     <link>https://raw.githubusercontent.com/iannuttall/caffeine/main/appcast.xml</link>
     <description>Caffeine release updates.</description>
     <language>en</language>
+    <!-- Newest release first. Scripts/make_appcast.sh writes each signed item. -->
   </channel>
 </rss>
