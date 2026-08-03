@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="Resources/AppIcon.icon/Assets/Cup.png" width="128" alt="Caffeine cup">
+<img src="docs/assets/caffeine.svg" width="128" alt="Caffeine">
 
 # Caffeine
 
@@ -159,5 +159,5 @@ output of `caffeine status --json` when it helps, but remove anything you do not
 
 ## License
 
-Caffeine is MIT licensed. The upstream Caffeine cup artwork keeps its MIT attribution
+Caffeine is MIT licensed. The upstream Caffeine menu-bar artwork keeps its MIT attribution
 in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

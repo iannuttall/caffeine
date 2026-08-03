@@ -2,8 +2,8 @@
 
 ## Upstream Caffeine artwork
 
-The menu-bar images in `Sources/Caffeine/Resources` and the app icon in `Resources/AppIcon.icon`
-come from the MIT-licensed [Caffeine project](https://github.com/domzilla/Caffeine).
+The menu-bar images in `Sources/Caffeine/Resources` come from the MIT-licensed
+[Caffeine project](https://github.com/domzilla/Caffeine).
 
 Copyright (c) 2006-2018 Tomas Franzén, Lighthead Software
 

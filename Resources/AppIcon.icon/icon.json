@@ -1,39 +1,54 @@
 {
-  "fill" : {
-    "linear-gradient" : [
-      "display-p3:0.35113,0.66052,1.00000,1.00000",
-      "extended-srgb:0.00000,0.53333,1.00000,1.00000"
-    ],
-    "orientation" : {
-      "start" : {
-        "x" : 0.5,
-        "y" : 0
-      },
-      "stop" : {
-        "x" : 0.5,
-        "y" : 0.7
+  "fill-specializations" : [
+    {
+      "value" : {
+        "automatic-gradient" : "display-p3:0.90088,0.83984,0.69092,1.00000"
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "automatic-gradient" : "display-p3:0.31104,0.24634,0.18579,1.00000"
       }
     }
-  },
+  ],
   "groups" : [
     {
       "layers" : [
         {
-          "glass-specializations" : [
+          "blend-mode-specializations" : [
             {
-              "value" : false
+              "appearance" : "tinted",
+              "value" : "plus-darker"
+            }
+          ],
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "display-p3:0.31104,0.24634,0.18579,1.00000"
+              }
             },
             {
               "appearance" : "dark",
-              "value" : true
+              "value" : {
+                "solid" : "display-p3:0.90088,0.83984,0.69092,1.00000"
+              }
             },
             {
               "appearance" : "tinted",
-              "value" : true
+              "value" : "automatic"
             }
           ],
-          "image-name" : "Cup.png",
-          "name" : "Cup"
+          "glass" : false,
+          "image-name" : "Image.png",
+          "name" : "Image",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
         }
       ],
       "shadow" : {
@@ -47,6 +62,9 @@
     }
   ],
   "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
     "squares" : "shared"
   }
 }

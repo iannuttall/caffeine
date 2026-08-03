@@ -13,5 +13,6 @@
 - Added a shared command-line interface for scripts and agents.
 - Added config-driven app packaging, Developer ID signing, notarization, Sparkle support, formatting, linting, tests, and CI.
 - Added a signed DMG release artifact, SHA-256 checksum, and bundle launch verification in CI and release builds.
+- Added the custom Caffeine logo and app icon.
 - Added live process ownership for other macOS sleep assertions, including assertions created on behalf of another app.
 - Added guided screen-off and lid-closed power tests with heartbeat, network, and competing-assertion evidence.
