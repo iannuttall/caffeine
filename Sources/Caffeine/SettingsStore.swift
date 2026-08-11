@@ -101,13 +101,18 @@ final class SettingsStore {
     }
 
     private func applyLoginItem() {
+        let service = SMAppService.mainApp
+
         do {
-            if self.launchAtLogin {
-                if SMAppService.mainApp.status == .notRegistered { try SMAppService.mainApp.register() }
-            } else if SMAppService.mainApp.status != .notRegistered {
-                try SMAppService.mainApp.unregister()
+            switch (self.launchAtLogin, service.status) {
+            case (true, .notRegistered), (true, .notFound):
+                try service.register()
+            case (false, .enabled), (false, .requiresApproval):
+                try service.unregister()
+            default:
+                break
             }
-            self.launchAtLoginError = SMAppService.mainApp.status == .requiresApproval
+            self.launchAtLoginError = service.status == .requiresApproval
                 ? "Allow Caffeine in System Settings → General → Login Items."
                 : nil
         } catch {

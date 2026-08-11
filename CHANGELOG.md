@@ -16,3 +16,4 @@
 - Added the custom Caffeine logo and app icon.
 - Added live process ownership for other macOS sleep assertions, including assertions created on behalf of another app.
 - Added guided screen-off and lid-closed power tests with heartbeat, network, and competing-assertion evidence.
+- Fixed automatic launch at login failing silently when macOS initially reports the app service as missing.
