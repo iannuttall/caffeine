@@ -5,6 +5,15 @@
     <link>https://raw.githubusercontent.com/iannuttall/caffeine/main/appcast.xml</link>
     <description>Caffeine release updates.</description>
     <language>en</language>
+    <item>
+      <title>0.1.0</title>
+      <description><![CDATA[<p>See the GitHub release notes for details.</p>]]></description>
+      <pubDate>Tue, 11 Aug 2026 08:50:00 +0100</pubDate>
+      <sparkle:version>1</sparkle:version>
+      <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <enclosure url="https://github.com/iannuttall/caffeine/releases/download/v0.1.0/Caffeine-0.1.0.dmg" length="4825041" type="application/octet-stream" sparkle:edSignature="KEKuLzzNwDmtW/nUJOVaf3Cl4038pEj3f6pIWXzj2plM7mp9Z/ATNYn1GTwJTFWL+j7EMHVcPybLIlXHDmRsAQ==" />
+    </item>
     <!-- Newest release first. Scripts/make_appcast.sh writes each signed item. -->
   </channel>
 </rss>
