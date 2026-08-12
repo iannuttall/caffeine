@@ -15,24 +15,26 @@ fi
 source "$ROOT/Scripts/sparkle_paths.sh"
 
 CLI_NAME=caffeinecli
+SWIFT_SCRATCH_PATH=${CAFFEINE_SWIFT_SCRATCH_PATH:-"$ROOT/.build"}
 if [[ "$CONF" == "release" ]]; then
     ARCH_LIST=(arm64 x86_64)
 else
     ARCH_LIST=("$(uname -m)")
 fi
 
-STAGE="$ROOT/.build/package-products/$CONF"
+STAGE="$SWIFT_SCRATCH_PATH/package-products/$CONF"
 rm -rf "$STAGE"
 for ARCH in "${ARCH_LIST[@]}"; do
-    swift build -c "$CONF" --arch "$ARCH"
-    BIN_DIR=$(swift build -c "$CONF" --arch "$ARCH" --show-bin-path)
+    swift build --scratch-path "$SWIFT_SCRATCH_PATH" -c "$CONF" --arch "$ARCH"
+    BIN_DIR=$(swift build --scratch-path "$SWIFT_SCRATCH_PATH" -c "$CONF" --arch "$ARCH" --show-bin-path)
     mkdir -p "$STAGE/$ARCH"
     cp "$BIN_DIR/$APP_NAME" "$STAGE/$ARCH/$APP_NAME"
     cp "$BIN_DIR/$CLI_NAME" "$STAGE/$ARCH/$CLI_NAME"
 done
-PREFERRED_BIN_DIR=$(swift build -c "$CONF" --arch "${ARCH_LIST[0]}" --show-bin-path)
+PREFERRED_BIN_DIR=$(swift build --scratch-path "$SWIFT_SCRATCH_PATH" -c "$CONF" --arch "${ARCH_LIST[0]}" --show-bin-path)
 
-APP="$ROOT/.build/package/$APP_NAME.app"
+PACKAGE_DIR=${CAFFEINE_PACKAGE_DIR:-"$ROOT/.build/package"}
+APP="$PACKAGE_DIR/$APP_NAME.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
 
@@ -110,7 +112,7 @@ $ICON_ENTRY
 PLIST
 
 xattr -cr "$APP"
-if [[ "$CONF" == "debug" ]]; then
+if [[ "$CONF" == "debug" || "${CAFFEINE_ADHOC_SIGN:-}" == "1" ]]; then
     if [[ -d "$APP/Contents/Frameworks/Sparkle.framework" ]]; then
         while IFS= read -r target; do codesign --force --sign - "$target" || true; done < <(sparkle_signing_targets "$APP/Contents/Frameworks/Sparkle.framework")
     fi

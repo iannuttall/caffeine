@@ -38,25 +38,7 @@ SIGN_INFO=$(codesign -d --verbose=2 "$APP" 2>&1 || true)
     exit 1
 }
 
-LAUNCH_PID=""
-cleanup_launch() {
-    if [[ -n "$LAUNCH_PID" ]] && kill -0 "$LAUNCH_PID" 2>/dev/null; then
-        kill "$LAUNCH_PID" 2>/dev/null || true
-    fi
-}
-trap cleanup_launch EXIT
-"$APP/Contents/MacOS/$APP_NAME" >/dev/null 2>&1 &
-LAUNCH_PID=$!
-sleep 5
-if kill -0 "$LAUNCH_PID" 2>/dev/null; then
-    kill "$LAUNCH_PID"
-    wait "$LAUNCH_PID" 2>/dev/null || true
-    LAUNCH_PID=""
-else
-    wait "$LAUNCH_PID" 2>/dev/null || true
-    echo "ERROR: The signed app exited during its launch check." >&2
-    exit 1
-fi
+"$ROOT/Scripts/verify_app_bundle.sh" "$APP"
 
 ARTIFACTS="$ROOT/.build/artifacts"
 mkdir -p "$ARTIFACTS"

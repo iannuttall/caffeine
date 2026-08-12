@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fixed the packaged app crashing at launch when its SwiftPM image bundle is installed under the standard macOS `Contents/Resources` directory.
+
 ## 0.1.0 - 2026-08-01
 
 - Rebuilt Caffeine as a Swift 6.2 SwiftPM menu bar app.
