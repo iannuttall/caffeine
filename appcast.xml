@@ -6,6 +6,15 @@
     <description>Caffeine release updates.</description>
     <language>en</language>
     <item>
+      <title>0.1.1</title>
+      <description><![CDATA[<p>See the GitHub release notes for details.</p>]]></description>
+      <pubDate>Thu, 13 Aug 2026 15:46:38 +0100</pubDate>
+      <sparkle:version>2</sparkle:version>
+      <sparkle:shortVersionString>0.1.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <enclosure url="https://github.com/iannuttall/caffeine/releases/download/v0.1.1/Caffeine-0.1.1.dmg" length="4829005" type="application/octet-stream" sparkle:edSignature="vYgYZLFB021XCumujB/dqRunNUEZU3zygWZVOoBq9KZEEMWpz9PM17VTD/LhQMvUgRUm6YM4cOhtIIC7FsIFAA==" />
+    </item>
+    <item>
       <title>0.1.0</title>
       <description><![CDATA[<p>See the GitHub release notes for details.</p>]]></description>
       <pubDate>Tue, 11 Aug 2026 08:50:00 +0100</pubDate>
