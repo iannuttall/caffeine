@@ -76,9 +76,15 @@ enum CaffeineCLI {
 
         print(active ? "active" : "inactive")
         print(source)
-        if !agents.isEmpty { print("Agents: \(agents.joined(separator: ", "))") }
-        if !installedAgents.isEmpty { print("Installed: \(installedAgents.joined(separator: ", "))") }
-        if let batteryValue { print("Battery: \(batteryValue)%") }
+        if !agents.isEmpty {
+            print("Agents: \(agents.joined(separator: ", "))")
+        }
+        if !installedAgents.isEmpty {
+            print("Installed: \(installedAgents.joined(separator: ", "))")
+        }
+        if let batteryValue {
+            print("Battery: \(batteryValue)%")
+        }
     }
 
     private static func agentEvent(arguments: [String]) {

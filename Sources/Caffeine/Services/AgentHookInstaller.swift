@@ -70,9 +70,13 @@ struct AgentHookInstaller {
         let claude = try AgentHookConfiguration.removing(from: claudeOriginal)
         let codex = try AgentHookConfiguration.removing(from: codexOriginal)
 
-        if let claude { try self.write(claude, to: self.claudeURL, replacing: claudeOriginal) }
+        if let claude {
+            try self.write(claude, to: self.claudeURL, replacing: claudeOriginal)
+        }
         do {
-            if let codex { try self.write(codex, to: self.codexURL, replacing: codexOriginal) }
+            if let codex {
+                try self.write(codex, to: self.codexURL, replacing: codexOriginal)
+            }
         } catch {
             if let claude {
                 try? self.restore(claudeOriginal, at: self.claudeURL, replacing: claude)

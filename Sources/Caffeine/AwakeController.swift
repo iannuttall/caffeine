@@ -69,7 +69,9 @@ final class AwakeController {
     }
 
     var statusDetail: String {
-        if let assertionError { return assertionError }
+        if let assertionError {
+            return assertionError
+        }
         switch self.policyResult.source {
         case .inactive:
             if self.smartPaused, !self.activeAgents.isEmpty {
@@ -80,7 +82,10 @@ final class AwakeController {
                 : "Your Mac can sleep normally."
         case .manual:
             if let seconds = self.policyResult
-                .remainingSeconds { return "Turns off in \(DurationParser.label(seconds: seconds))." }
+                .remainingSeconds
+            {
+                return "Turns off in \(DurationParser.label(seconds: seconds))."
+            }
             return self.settings.closedLidMode
                 ? "Manual session · closed-lid assertion requested."
                 : "Manual session · no time limit."
@@ -146,7 +151,9 @@ final class AwakeController {
     func deactivate() {
         self.manualActive = false
         self.manualDeadline = nil
-        if !self.activeAgents.isEmpty { self.smartPaused = true }
+        if !self.activeAgents.isEmpty {
+            self.smartPaused = true
+        }
         self.persistManualSession()
         self.evaluate()
     }
@@ -170,7 +177,9 @@ final class AwakeController {
             self.sleepBlockers = await blockers
             self.hookStatus = self.hookInstaller.status
             self.rebuildActiveAgents()
-            if self.activeAgents.isEmpty { self.smartPaused = false }
+            if self.activeAgents.isEmpty {
+                self.smartPaused = false
+            }
             self.scanTask = nil
             self.evaluate()
         }
@@ -212,7 +221,9 @@ final class AwakeController {
         self.consumeCommand()
         self.refreshLifecycleNow()
         self.tickCount += 1
-        if self.tickCount.isMultiple(of: 30) { self.refreshPowerSource() }
+        if self.tickCount.isMultiple(of: 30) {
+            self.refreshPowerSource()
+        }
         if self.manualActive, let deadline = self.manualDeadline, deadline <= Date() {
             self.manualActive = false
             self.manualDeadline = nil
@@ -330,7 +341,9 @@ final class AwakeController {
             guard let self, !Task.isCancelled else { return }
             self.lifecycleSessions = sessions
             self.rebuildActiveAgents()
-            if self.activeAgents.isEmpty { self.smartPaused = false }
+            if self.activeAgents.isEmpty {
+                self.smartPaused = false
+            }
             self.lifecycleTask = nil
             self.evaluate()
         }

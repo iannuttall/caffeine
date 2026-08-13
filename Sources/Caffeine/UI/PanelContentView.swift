@@ -13,7 +13,9 @@ struct PanelContentView: View {
             self.quickTimers
             self.agentWatch
             self.powerSummary
-            if !self.controller.sleepBlockers.isEmpty { self.sleepBlockers }
+            if !self.controller.sleepBlockers.isEmpty {
+                self.sleepBlockers
+            }
             Spacer(minLength: 0)
             self.footer
         }

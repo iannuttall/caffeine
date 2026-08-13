@@ -100,7 +100,9 @@ public enum ProcessListParser {
     }
 
     private static func isAppBundleProcess(commandPath: String, arguments: String) -> Bool {
-        if commandPath.localizedCaseInsensitiveContains(".app/Contents/") { return true }
+        if commandPath.localizedCaseInsensitiveContains(".app/Contents/") {
+            return true
+        }
         guard let appRange = arguments.range(of: ".app/Contents/", options: .caseInsensitive) else { return false }
         guard let optionRange = arguments.range(of: " --") else { return true }
         return appRange.lowerBound < optionRange.lowerBound
@@ -199,7 +201,9 @@ public enum DurationParser {
     public static func seconds(from value: String) -> TimeInterval? {
         let input = value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !input.isEmpty else { return nil }
-        if input == "infinity" || input == "indefinite" || input == "forever" { return 0 }
+        if input == "infinity" || input == "indefinite" || input == "forever" {
+            return 0
+        }
 
         let unit = input.last
         let number: String
@@ -224,9 +228,13 @@ public enum DurationParser {
 
     public static func label(seconds: Int) -> String {
         let safe = max(0, seconds)
-        if safe < 60 { return "\(safe)s" }
+        if safe < 60 {
+            return "\(safe)s"
+        }
         let minutes = safe / 60
-        if minutes < 60 { return "\(minutes)m" }
+        if minutes < 60 {
+            return "\(minutes)m"
+        }
         let hours = minutes / 60
         let remainder = minutes % 60
         return remainder == 0 ? "\(hours)h" : "\(hours)h \(remainder)m"
