@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1 - 2026-08-13
+
+- Fixed launch crash when SwiftPM resource bundle could not be found in packaged app. (Thanks to @Jawher22 for reporting!)
+
 ## 0.1.0 - 2026-08-01
 
 - Rebuilt Caffeine as a Swift 6.2 SwiftPM menu bar app.

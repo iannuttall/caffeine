@@ -6,7 +6,7 @@ enum CaffeineAssets {
         let image = NSImage(size: NSSize(width: 22, height: 20))
 
         for resource in [name, "\(name)@2x"] {
-            guard let url = Bundle.module.url(forResource: resource, withExtension: "png"),
+            guard let url = ResourceBundle.resources.url(forResource: resource, withExtension: "png"),
                   let source = NSImage(contentsOf: url)
             else { continue }
             for representation in source.representations {
@@ -21,7 +21,7 @@ enum CaffeineAssets {
     }
 
     static func cupImage() -> NSImage {
-        guard let url = Bundle.module.url(forResource: "Cup", withExtension: "png"),
+        guard let url = ResourceBundle.resources.url(forResource: "Cup", withExtension: "png"),
               let image = NSImage(contentsOf: url)
         else { return NSImage() }
         return image

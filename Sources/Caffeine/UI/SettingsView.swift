@@ -210,7 +210,9 @@ private struct AgentSettingsPane: View {
     }
 
     private func agentDetail(_ agent: ActiveAgent) -> String {
-        if let pid = agent.pid { return "PID \(pid)" }
+        if let pid = agent.pid {
+            return "PID \(pid)"
+        }
         return "hook"
     }
 
@@ -295,7 +297,9 @@ private struct PowerSettingsPane: View {
                 } else {
                     ForEach(Array(self.controller.sleepBlockers.enumerated()), id: \.element.id) { index, blocker in
                         SleepBlockerRow(blocker: blocker)
-                        if index < self.controller.sleepBlockers.count - 1 { Divider() }
+                        if index < self.controller.sleepBlockers.count - 1 {
+                            Divider()
+                        }
                     }
                 }
                 HStack {

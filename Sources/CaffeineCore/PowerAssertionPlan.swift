@@ -36,9 +36,15 @@ public struct PowerAssertionPlan: Equatable, Sendable {
         guard self.active else { return [] }
 
         var assertions: [PowerAssertionKind] = [.system]
-        if self.keepNetworkActive { assertions.append(.network) }
-        if !self.allowDisplaySleep { assertions.append(.display) }
-        if self.closedLidMode { assertions.append(.closedLid) }
+        if self.keepNetworkActive {
+            assertions.append(.network)
+        }
+        if !self.allowDisplaySleep {
+            assertions.append(.display)
+        }
+        if self.closedLidMode {
+            assertions.append(.closedLid)
+        }
         return assertions
     }
 }

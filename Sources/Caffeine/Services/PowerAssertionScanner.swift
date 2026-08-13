@@ -48,9 +48,15 @@ actor PowerAssertionScanner {
         if let resources = assertion["ResourcesUsed"] as? [String] {
             let input = resources.contains("audio-in")
             let output = resources.contains("audio-out")
-            if input, output { return "Audio input and output" }
-            if input { return "Audio input" }
-            if output { return "Audio output" }
+            if input, output {
+                return "Audio input and output"
+            }
+            if input {
+                return "Audio input"
+            }
+            if output {
+                return "Audio output"
+            }
         }
         return assertion["Details"] as? String
             ?? assertion["HumanReadableReason"] as? String

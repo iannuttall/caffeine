@@ -187,7 +187,9 @@ final class PanelController: NSObject, NSWindowDelegate {
     }
 
     private func startMonitoring() {
-        if let outsideClickMonitor { NSEvent.removeMonitor(outsideClickMonitor) }
+        if let outsideClickMonitor {
+            NSEvent.removeMonitor(outsideClickMonitor)
+        }
         self.outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(
             matching: [.leftMouseDown, .rightMouseDown])
         { [weak self] _ in

@@ -104,7 +104,9 @@ public enum SleepBlockerCatalog {
                 let assertions = group
                     .map { SleepBlockerAssertion(kind: $0.kind, reason: $0.reason, startedAt: $0.startedAt) }
                     .sorted {
-                        if $0.kind.rawValue == $1.kind.rawValue { return $0.reason < $1.reason }
+                        if $0.kind.rawValue == $1.kind.rawValue {
+                            return $0.reason < $1.reason
+                        }
                         return $0.kind.rawValue < $1.kind.rawValue
                     }
                 let viaNames = Set(group.compactMap { record in

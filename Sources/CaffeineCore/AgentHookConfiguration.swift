@@ -127,7 +127,9 @@ public enum AgentHookConfiguration {
                 "type": "command",
             ]],
         ]
-        if let matcher { group["matcher"] = matcher }
+        if let matcher {
+            group["matcher"] = matcher
+        }
         groups.append(group)
         hooks[event] = groups
     }
@@ -152,8 +154,12 @@ public enum AgentHookConfiguration {
     }
 
     private static func containsMarker(_ value: Any) -> Bool {
-        if let string = value as? String { return string.contains(self.commandMarker) }
-        if let array = value as? [Any] { return array.contains(where: self.containsMarker) }
+        if let string = value as? String {
+            return string.contains(self.commandMarker)
+        }
+        if let array = value as? [Any] {
+            return array.contains(where: self.containsMarker)
+        }
         if let dictionary = value as? [String: Any] {
             return dictionary.values.contains(where: self.containsMarker)
         }
