@@ -13,11 +13,16 @@ source "$ROOT/Scripts/sparkle_paths.sh"
 
 "$ROOT/Scripts/validate_changelog.sh"
 
-: "${APP_IDENTITY:?Set APP_IDENTITY to a Developer ID Application identity}"
-: "${ASC_KEY_ID:?Set ASC_KEY_ID}"
-: "${ASC_ISSUER_ID:?Set ASC_ISSUER_ID}"
-: "${ASC_KEY_PATH:?Set ASC_KEY_PATH to the App Store Connect .p8 key}"
-[[ -f "$ASC_KEY_PATH" ]] || { echo "ERROR: App Store Connect key not found: $ASC_KEY_PATH" >&2; exit 1; }
+APP_IDENTITY="${APP_IDENTITY:-${SIGN_IDENTITY:-}}"
+NOTARY_PROFILE="${NOTARY_PROFILE:-}"
+
+: "${APP_IDENTITY:?Set APP_IDENTITY or SIGN_IDENTITY to a Developer ID Application identity}"
+if [[ -z "$NOTARY_PROFILE" ]]; then
+    : "${ASC_KEY_ID:?Set NOTARY_PROFILE or ASC_KEY_ID}"
+    : "${ASC_ISSUER_ID:?Set ASC_ISSUER_ID when using an API key}"
+    : "${ASC_KEY_PATH:?Set ASC_KEY_PATH when using an API key}"
+    [[ -f "$ASC_KEY_PATH" ]] || { echo "ERROR: App Store Connect key not found: $ASC_KEY_PATH" >&2; exit 1; }
+fi
 [[ -n "$SPARKLE_PUBLIC_KEY" ]] || { echo "ERROR: Set the Sparkle public key before release." >&2; exit 1; }
 if pgrep -x "$APP_NAME" >/dev/null 2>&1; then
     echo "ERROR: Quit every running copy of $APP_NAME before making a release." >&2
@@ -64,12 +69,38 @@ DMG="$ARTIFACTS/Caffeine-$MARKETING_VERSION.dmg"
 CHECKSUM="$DMG.sha256"
 "$ROOT/Scripts/build_dmg.sh" "$APP" "$DMG" >/dev/null
 codesign --force --timestamp --sign "$APP_IDENTITY" "$DMG"
-xcrun notarytool submit "$DMG" --key "$ASC_KEY_PATH" --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" --wait
+if [[ -n "$NOTARY_PROFILE" ]]; then
+    xcrun notarytool submit "$DMG" --keychain-profile "$NOTARY_PROFILE" --wait
+else
+    xcrun notarytool submit "$DMG" --key "$ASC_KEY_PATH" --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" --wait
+fi
 xcrun stapler staple "$DMG"
 xcrun stapler validate "$DMG"
 spctl --assess --type open --context context:primary-signature --verbose=2 "$DMG"
 
 SHA256=$(shasum -a 256 "$DMG" | cut -d' ' -f1)
 printf '%s  %s\n' "$SHA256" "$(basename "$DMG")" > "$CHECKSUM"
+
+TAG="v$MARKETING_VERSION"
+if command -v gh >/dev/null 2>&1; then
+    if gh release view "$TAG" --json isDraft >/dev/null 2>&1; then
+        existing_draft=$(gh release view "$TAG" --json isDraft -q '.isDraft')
+        if [[ "$existing_draft" == "true" ]]; then
+            gh release upload "$TAG" "$DMG" "$CHECKSUM" --clobber
+            echo "Updated draft release $TAG with new assets."
+        else
+            echo "warning: $TAG is already published; not overwriting." >&2
+        fi
+    else
+        gh release create "$TAG" "$DMG" "$CHECKSUM" \
+            --draft \
+            --title "$APP_NAME $MARKETING_VERSION" \
+            --generate-notes
+        echo "Created draft release $TAG."
+    fi
+else
+    echo "warning: gh CLI not available; create the GitHub draft release manually." >&2
+fi
+
 echo "$DMG"
 echo "$CHECKSUM"

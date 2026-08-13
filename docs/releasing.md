@@ -4,93 +4,77 @@ Caffeine ships as a notarized Developer ID app inside a DMG. Sparkle reads `appc
 the public GitHub repository and verifies every update against the EdDSA public key in
 `app.config.json`.
 
+## Release workflow
+
+A coding agent on the release Mac handles each release as a single PR:
+
+1. Bump `MARKETING_VERSION` and `BUILD_NUMBER` in `version.env`.
+2. Add a dated section to `CHANGELOG.md`.
+3. Run `make release` to sign, notarize, and upload the DMG and checksum to a draft GitHub
+   release.
+4. Run `make appcast` to sign the DMG for Sparkle and update `appcast.xml`.
+5. Commit everything and open (or update) the PR.
+
+Merging that PR to `main` triggers the `publish-release` workflow. CI does not build or
+notarize a new DMG. The workflow reads the newest appcast item, confirms the draft release
+has matching assets, verifies the checksum, and publishes the release.
+
 ## Set up the release Mac once
 
 The Mac needs a `Developer ID Application` certificate and its private key in Keychain. Apple
-notarization uses an App Store Connect API key stored outside this repository.
+notarization uses a keychain profile stored via `xcrun notarytool store-credentials`.
 
 Set these environment variables through the private macOS signing config.
 
 ```sh
 export APP_IDENTITY="Developer ID Application: Name (TEAMID)"
-export ASC_KEY_ID="KEYID"
-export ASC_ISSUER_ID="ISSUERID"
-export ASC_KEY_PATH="$HOME/.config/macos/AuthKey_KEYID.p8"
+export NOTARY_PROFILE="portmanager"
 export SPARKLE_PRIVATE_KEY_PATH="$HOME/.config/macos/sparkle-private-key"
 ```
 
+`SIGN_IDENTITY` is accepted as an alias for `APP_IDENTITY`. If `NOTARY_PROFILE` is not set,
+the script falls back to `ASC_KEY_ID`, `ASC_ISSUER_ID`, and `ASC_KEY_PATH` for API key
+notarization.
+
 The Sparkle private key must match the public key pinned in `app.config.json`. Never add the
-private key, notarization key, or certificate export to the repository.
+private key, notarization credentials, or certificate export to the repository.
 
-## Prepare the version
+## What the agent does
 
-Start from a clean commit. Update `MARKETING_VERSION` and `BUILD_NUMBER` in `version.env`, then
-add a dated section with the same version to `CHANGELOG.md`.
-
-Run the checks and build the unsigned universal bundle.
+The release agent bumps the version, then runs:
 
 ```sh
 make check
-make package
-```
-
-`make package` builds the app, bundled CLI, and every Sparkle executable for both `arm64` and
-`x86_64`. It does not use release credentials.
-
-## Sign and notarize the DMG
-
-Quit every running copy of Caffeine before starting the release.
-
-```sh
 make release
-```
-
-The release script signs Sparkle from the inside out, signs the CLI and app with hardened
-runtime, launches the signed app, and builds a drag-install DMG. It submits that DMG to Apple,
-staples the accepted ticket, runs Gatekeeper, and writes a SHA-256 checksum.
-
-The script writes two final files.
-
-```text
-.build/artifacts/Caffeine-VERSION.dmg
-.build/artifacts/Caffeine-VERSION.dmg.sha256
-```
-
-## Update the Sparkle feed
-
-Sign the exact notarized DMG and add its entry to `appcast.xml`.
-
-```sh
 make appcast ARTIFACT=.build/artifacts/Caffeine-VERSION.dmg
 ```
 
-Review and commit the generated appcast before publishing the GitHub release. Installed copies
-read that file directly from the `main` branch, so the feed URL and public key must not change
-after the first release.
+`make release` signs Sparkle from the inside out, signs the CLI and app with hardened runtime,
+launches the signed app, and builds a drag-install DMG. It submits that DMG to Apple, staples
+the accepted ticket, runs Gatekeeper, and writes a SHA-256 checksum. If `gh` is available and
+authenticated, it creates (or updates) a draft GitHub release tagged `vVERSION` with the DMG
+and checksum. The draft stays private until the workflow publishes it.
 
-## Publish the GitHub release
+`make appcast` signs the notarized DMG with the Sparkle private key and adds its item to
+`appcast.xml`.
 
-Tag and upload the same files that were notarized and signed for Sparkle.
+The agent commits `version.env`, `CHANGELOG.md`, and `appcast.xml`, then opens (or updates) a
+PR. When the PR merges, the workflow publishes the draft release.
 
-```sh
-VERSION=0.1.0
-git tag "v$VERSION"
-git push origin "v$VERSION"
+## Publish via the workflow
 
-gh release create "v$VERSION" \
-  ".build/artifacts/Caffeine-$VERSION.dmg" \
-  ".build/artifacts/Caffeine-$VERSION.dmg.sha256" \
-  --title "Caffeine $VERSION" \
-  --generate-notes
-```
+When `appcast.xml` merges to `main`, the `publish-release` workflow runs. It parses the newest
+item in `appcast.xml`, validates that the draft release has matching assets with the expected
+size and signature, verifies the checksum, and publishes the release at the merged commit.
 
-Do not rebuild between `make release`, appcast signing, and upload. Sparkle checks the bytes, so
-even a harmless rebuild produces a different signature.
+If the release was already published, the workflow succeeds without changing anything.
 
-## Check the exact artifact
+Do not rebuild between `make release`, appcast signing, and merge. Sparkle checks the bytes,
+so even a harmless rebuild produces a different signature.
 
-Mount the DMG and drag Caffeine to Applications. Check the installed app and artifact with these
-commands.
+## Verify a release
+
+Mount the DMG and drag Caffeine to Applications. Check the installed app and artifact:
 
 ```sh
 codesign --verify --deep --strict --verbose=2 /Applications/Caffeine.app
