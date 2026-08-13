@@ -4,6 +4,22 @@ Caffeine ships as a notarized Developer ID app inside a DMG. Sparkle reads `appc
 the public GitHub repository and verifies every update against the EdDSA public key in
 `app.config.json`.
 
+## Release workflow
+
+1. Update `MARKETING_VERSION` and `BUILD_NUMBER` in `version.env`.
+2. Add a dated section with the same version to `CHANGELOG.md`.
+3. Run `make release` on the release Mac. This signs, notarizes, and creates a draft GitHub
+   release with the DMG and checksum.
+4. Run `make appcast ARTIFACT=.build/artifacts/Caffeine-VERSION.dmg` to sign the DMG for
+   Sparkle and update `appcast.xml`.
+5. Commit the `appcast.xml` change and merge it to `main`.
+6. The `publish-release` workflow validates the draft and publishes it.
+
+CI does not build or notarize a new DMG when `appcast.xml` changes. The workflow reads the
+newest appcast item, confirms that the matching draft release already has the DMG and
+checksum with the expected size and signature, verifies the checksum, and then publishes the
+release.
+
 ## Set up the release Mac once
 
 The Mac needs a `Developer ID Application` certificate and its private key in Keychain. Apple
@@ -49,6 +65,9 @@ The release script signs Sparkle from the inside out, signs the CLI and app with
 runtime, launches the signed app, and builds a drag-install DMG. It submits that DMG to Apple,
 staples the accepted ticket, runs Gatekeeper, and writes a SHA-256 checksum.
 
+If `gh` is available and authenticated, the script creates (or updates) a draft GitHub release
+tagged `vVERSION` with the DMG and checksum. The script does not overwrite a published release.
+
 The script writes two final files.
 
 ```text
@@ -64,27 +83,19 @@ Sign the exact notarized DMG and add its entry to `appcast.xml`.
 make appcast ARTIFACT=.build/artifacts/Caffeine-VERSION.dmg
 ```
 
-Review and commit the generated appcast before publishing the GitHub release. Installed copies
-read that file directly from the `main` branch, so the feed URL and public key must not change
-after the first release.
+Review and commit the generated appcast before merging to `main`. Installed copies read that
+file directly from the `main` branch, so the feed URL and public key must not change after the
+first release.
 
-## Publish the GitHub release
+## Publish via the workflow
 
-Tag and upload the same files that were notarized and signed for Sparkle.
+When the appcast commit merges to `main`, the `publish-release` workflow runs. It parses the
+newest item in `appcast.xml`, validates that the draft release has matching assets, verifies
+the checksum, and publishes the release at the merged commit.
 
-```sh
-VERSION=0.1.0
-git tag "v$VERSION"
-git push origin "v$VERSION"
+If the release was already published, the workflow succeeds without changing anything.
 
-gh release create "v$VERSION" \
-  ".build/artifacts/Caffeine-$VERSION.dmg" \
-  ".build/artifacts/Caffeine-$VERSION.dmg.sha256" \
-  --title "Caffeine $VERSION" \
-  --generate-notes
-```
-
-Do not rebuild between `make release`, appcast signing, and upload. Sparkle checks the bytes, so
+Do not rebuild between `make release`, appcast signing, and merge. Sparkle checks the bytes, so
 even a harmless rebuild produces a different signature.
 
 ## Check the exact artifact

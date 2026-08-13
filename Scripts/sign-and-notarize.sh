@@ -71,5 +71,27 @@ spctl --assess --type open --context context:primary-signature --verbose=2 "$DMG
 
 SHA256=$(shasum -a 256 "$DMG" | cut -d' ' -f1)
 printf '%s  %s\n' "$SHA256" "$(basename "$DMG")" > "$CHECKSUM"
+
+TAG="v$MARKETING_VERSION"
+if command -v gh >/dev/null 2>&1; then
+    if gh release view "$TAG" --json isDraft >/dev/null 2>&1; then
+        existing_draft=$(gh release view "$TAG" --json isDraft -q '.isDraft')
+        if [[ "$existing_draft" == "true" ]]; then
+            gh release upload "$TAG" "$DMG" "$CHECKSUM" --clobber
+            echo "Updated draft release $TAG with new assets."
+        else
+            echo "warning: $TAG is already published; not overwriting." >&2
+        fi
+    else
+        gh release create "$TAG" "$DMG" "$CHECKSUM" \
+            --draft \
+            --title "$APP_NAME $MARKETING_VERSION" \
+            --generate-notes
+        echo "Created draft release $TAG."
+    fi
+else
+    echo "warning: gh CLI not available; create the GitHub draft release manually." >&2
+fi
+
 echo "$DMG"
 echo "$CHECKSUM"
