@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.1 - Unreleased
+## 0.1.1 - 2026-08-13
 
 - Fixed launch crash when SwiftPM resource bundle could not be found in packaged app. (Thanks to @Jawher22 for reporting!)
 
