@@ -22,20 +22,22 @@ has matching assets, verifies the checksum, and publishes the release.
 ## Set up the release Mac once
 
 The Mac needs a `Developer ID Application` certificate and its private key in Keychain. Apple
-notarization uses an App Store Connect API key stored outside this repository.
+notarization uses a keychain profile stored via `xcrun notarytool store-credentials`.
 
 Set these environment variables through the private macOS signing config.
 
 ```sh
 export APP_IDENTITY="Developer ID Application: Name (TEAMID)"
-export ASC_KEY_ID="KEYID"
-export ASC_ISSUER_ID="ISSUERID"
-export ASC_KEY_PATH="$HOME/.config/macos/AuthKey_KEYID.p8"
+export NOTARY_PROFILE="portmanager"
 export SPARKLE_PRIVATE_KEY_PATH="$HOME/.config/macos/sparkle-private-key"
 ```
 
+`SIGN_IDENTITY` is accepted as an alias for `APP_IDENTITY`. If `NOTARY_PROFILE` is not set,
+the script falls back to `ASC_KEY_ID`, `ASC_ISSUER_ID`, and `ASC_KEY_PATH` for API key
+notarization.
+
 The Sparkle private key must match the public key pinned in `app.config.json`. Never add the
-private key, notarization key, or certificate export to the repository.
+private key, notarization credentials, or certificate export to the repository.
 
 ## What the agent does
 
